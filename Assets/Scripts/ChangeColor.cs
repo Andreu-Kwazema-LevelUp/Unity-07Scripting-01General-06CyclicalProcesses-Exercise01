@@ -1,15 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ChangeColor : MonoBehaviour
 {
-    public int Loops { get; private set; }
+    #region Private Fields
 
     [SerializeField]
     private List<Color> _values;
 
     [SerializeField]
     private float _transition = 2f;
+
 
     private float _transitionStep;
 
@@ -18,6 +20,18 @@ public class ChangeColor : MonoBehaviour
     private Color _currentValue;
 
     private int _valueIndex;
+
+    #endregion
+
+
+    #region Public Attributes
+    
+    public int Loops { get; private set; }
+
+    #endregion
+
+
+    #region Unity Lifecycle
 
     private void Awake()
     {
@@ -33,28 +47,41 @@ public class ChangeColor : MonoBehaviour
         _valueIndex = 0;
 
         Loops = 0;
+
+        StartCoroutine(TransitionPoints());
     }
 
-    void Update()
+    #endregion
+
+
+    #region Corroutines
+
+    private IEnumerator TransitionPoints()
     {
-
-        if (_transition > _transitionStep)
+        while (true)
         {
-            _transitionStep += Time.deltaTime;
+            if (_transition > _transitionStep)
+            {
+                _transitionStep += Time.deltaTime;
 
-            float step = _transitionStep / _transition;
+                float step = _transitionStep / _transition;
 
-            _myRenderer.material.color = Color.Lerp(_currentValue, _values[_valueIndex], step);
-        }
-        else
-        {
-            _transitionStep = 0;
+                _myRenderer.material.color = Color.Lerp(_currentValue, _values[_valueIndex], step);
+            }
+            else
+            {
+                _transitionStep = 0;
 
-            _currentValue = _values[_valueIndex];
+                _currentValue = _values[_valueIndex];
 
-            _valueIndex = (_valueIndex + 1) % _values.Count;
+                _valueIndex = (_valueIndex + 1) % _values.Count;
 
-            Loops++;
+                Loops++;
+            }
+
+            yield return null;
         }
     }
+
+    #endregion
 }

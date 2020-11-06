@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PointsMovement : MonoBehaviour
 {
-    public int Loops { get; private set; }
+    #region Private Fields
 
     [SerializeField]
     private List<Vector3> _values;
@@ -11,11 +12,24 @@ public class PointsMovement : MonoBehaviour
     [SerializeField]
     private float _transition = 2f;
 
+
     private Vector3 _currentValue;
 
     private float _transitionStep;
 
     private int _valueIndex;
+
+    #endregion
+
+
+    #region Public Attributes
+
+    public int Loops { get; private set; }
+
+    #endregion
+
+
+    #region Unity Lifecycle
 
     private void Start()
     {
@@ -26,27 +40,41 @@ public class PointsMovement : MonoBehaviour
         Loops = 0;
 
         _currentValue = transform.position;
+
+        StartCoroutine(TransitionPoints());
     }
 
-    void Update()
+    #endregion
+
+    
+    #region Corroutines
+
+    private IEnumerator TransitionPoints()
     {
-        if (_transition > _transitionStep)
+        while (true)
         {
-            _transitionStep += Time.deltaTime;
+            if (_transition > _transitionStep)
+            {
+                _transitionStep += Time.deltaTime;
 
-            float step = _transitionStep / _transition;
+                float step = _transitionStep / _transition;
 
-            transform.position = Vector3.Lerp(_currentValue, _values[_valueIndex], step);
-        }
-        else
-        {
-            _transitionStep = 0;
+                transform.position = Vector3.Lerp(_currentValue, _values[_valueIndex], step);
+            }
+            else
+            {
+                _transitionStep = 0;
 
-            _currentValue = _values[_valueIndex];
+                _currentValue = _values[_valueIndex];
 
-            _valueIndex = (_valueIndex + 1) % _values.Count;
+                _valueIndex = (_valueIndex + 1) % _values.Count;
 
-            Loops++;
+                Loops++;
+            }
+
+            yield return null;
         }
     }
+
+    #endregion
 }

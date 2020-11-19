@@ -1,79 +1,17 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class PointsMovement : MonoBehaviour
+public class PointsMovement : TransitionBase<Vector3>
 {
-    #region Private Fields
+    #region Methods
 
-    [SerializeField]
-    private List<Vector3> _values;
-
-    [SerializeField]
-    private float _transition = 2f;
-
-
-    private Vector3 _currentValue;
-
-    private float _transitionStep;
-
-    private int _valueIndex;
-
-    #endregion
-
-
-    #region Public Attributes
-
-    public int Loops { get; private set; }
-
-    #endregion
-
-
-    #region Unity Lifecycle
-
-    private void Start()
+    protected override void Lerp(Vector3 current, Vector3 next, float step)
     {
-        _transitionStep = 0;
-
-        _valueIndex = 0;
-
-        Loops = 0;
-
-        _currentValue = transform.position;
-
-        StartCoroutine(TransitionPoints());
+        transform.position = Vector3.Lerp(current, next, step);
     }
 
-    #endregion
-
-    
-    #region Corroutines
-
-    private IEnumerator TransitionPoints()
+    protected override void SetInitialValue()
     {
-        while (true)
-        {
-            if (_transition > _transitionStep)
-            {
-                _transitionStep += Time.deltaTime;
-
-                float step = _transitionStep / _transition;
-
-                transform.position = Vector3.Lerp(_currentValue, _values[_valueIndex], step);
-            }
-            else
-            {
-                _transitionStep = 0;
-
-                _currentValue = _values[_valueIndex];
-
-                _valueIndex = (_valueIndex + 1) % _values.Count;
-
-                Loops++;
-            }
-
-            yield return null;
-        }
+        SetCurrentValue(transform.position);
     }
 
     #endregion
